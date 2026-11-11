@@ -3,14 +3,17 @@
 import LivePhoto from "@/components/ui/LivePhoto";
 import CupSteam from "@/components/ui/CupSteam";
 import SlowSplash from "@/components/ui/SlowSplash";
+import dynamic from "next/dynamic";
+
+const FloatingCupsScene = dynamic(() => import("@/components/three/FloatingCupsScene"), { ssr: false });
+const BeanFallScene = dynamic(() => import("@/components/three/BeanFallScene"), { ssr: false });
 import { useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import Reveal from "@/components/ui/Reveal";
 
 function Overlay({ k }: { k: string }) {
   if (k === "Roast") return <CupSteam x={45} y={30} w={40} warm />;
-  if (k === "Brew") return <SlowSplash x={47} y={52} spread={36} rate={30} />;
-  if (k === "Enjoy") return <CupSteam x={49} y={63} w={16} />;
+  if (k === "Brew") return <SlowSplash x={47} y={50} spread={40} rate={14} power={0.85} />;
   return null;
 }
 
@@ -97,9 +100,19 @@ export default function Process() {
                   clipPath: i === active ? "inset(0% 0% 0% 0%)" : i < active ? "inset(0% 0% 100% 0%)" : "inset(100% 0% 0% 0%)",
                 }}
               >
-                <LivePhoto src={s.img} alt={`${s.k}: ${s.t}`} sizes="50vw" variant={(i % 3) as 0 | 1 | 2} className={`transition-transform duration-[1.6s] ease-expo ${i === active ? "scale-100" : "scale-125"}`}>
-                  {i === active && <Overlay k={s.k} />}
-                </LivePhoto>
+                {s.k === "Source" ? (
+                  <div className="absolute inset-0" role="img" aria-label="Roasted coffee beans falling past a white cup">
+                    <BeanFallScene active={i === active} />
+                  </div>
+                ) : s.k === "Enjoy" ? (
+                  <div className="absolute inset-0" role="img" aria-label="Cups and saucers floating weightlessly around a steaming cup">
+                    <FloatingCupsScene active={i === active} />
+                  </div>
+                ) : (
+                  <LivePhoto src={s.img} alt={`${s.k}: ${s.t}`} sizes="50vw" variant={(i % 3) as 0 | 1 | 2} className={`transition-transform duration-[1.6s] ease-expo ${i === active ? "scale-100" : "scale-125"}`}>
+                    {i === active && <Overlay k={s.k} />}
+                  </LivePhoto>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               </div>
             ))}
@@ -116,9 +129,19 @@ export default function Process() {
           {STEPS.map((s, i) => (
             <article key={s.k} className="process-step-m">
               <div className="relative aspect-[4/3] overflow-hidden">
-                <LivePhoto src={s.img} alt={`${s.k}: ${s.t}`} sizes="100vw" variant={(i % 3) as 0 | 1 | 2}>
-                  <Overlay k={s.k} />
-                </LivePhoto>
+                {s.k === "Source" ? (
+                  <div className="absolute inset-0" role="img" aria-label="Roasted coffee beans falling past a white cup">
+                    <BeanFallScene />
+                  </div>
+                ) : s.k === "Enjoy" ? (
+                  <div className="absolute inset-0" role="img" aria-label="Cups and saucers floating weightlessly around a steaming cup">
+                    <FloatingCupsScene />
+                  </div>
+                ) : (
+                  <LivePhoto src={s.img} alt={`${s.k}: ${s.t}`} sizes="100vw" variant={(i % 3) as 0 | 1 | 2}>
+                    <Overlay k={s.k} />
+                  </LivePhoto>
+                )}
                 <span className="absolute bottom-4 left-4 font-serif text-6xl font-light text-cream/80">0{i + 1}</span>
               </div>
               <h3 className="mt-6 font-serif text-4xl font-light">{s.k}</h3>

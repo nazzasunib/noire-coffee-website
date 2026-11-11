@@ -22,7 +22,7 @@ export type DropletsHandle = { burst: (origin: THREE.Vector3, opts?: BurstOption
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
 /** World-space pool of coffee droplets: stretched along velocity, arcing under gravity. */
-const Droplets = forwardRef<DropletsHandle, { pool?: number }>(function Droplets({ pool = 180 }, ref) {
+const Droplets = forwardRef<DropletsHandle, { pool?: number; timeScale?: number }>(function Droplets({ pool = 180, timeScale = 1 }, ref) {
   const mesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const drops = useMemo<Drop[]>(
@@ -52,7 +52,7 @@ const Droplets = forwardRef<DropletsHandle, { pool?: number }>(function Droplets
   useFrame((_, dt) => {
     const m = mesh.current;
     if (!m) return;
-    const step = Math.min(dt, 1 / 30);
+    const step = Math.min(dt, 1 / 30) * timeScale;
     drops.forEach((d, i) => {
       if (d.life > 0) {
         d.v.y -= 7.5 * step;
@@ -62,7 +62,7 @@ const Droplets = forwardRef<DropletsHandle, { pool?: number }>(function Droplets
       }
       const s = d.life > 0 ? d.size * Math.min(1, d.life * 3) : 0;
       dummy.position.copy(d.p);
-      dummy.scale.set(s, s * (1 + Math.min(2.2, d.v.length() * 0.2)), s);
+      dummy.scale.set(s, s * (1 + Math.min(0.6, d.v.length() * 0.08)), s);
       dummy.lookAt(d.p.x + d.v.x, d.p.y + d.v.y, d.p.z + d.v.z);
       dummy.rotateX(Math.PI / 2);
       dummy.updateMatrix();
@@ -73,8 +73,20 @@ const Droplets = forwardRef<DropletsHandle, { pool?: number }>(function Droplets
 
   return (
     <instancedMesh ref={mesh} args={[undefined, undefined, pool]} frustumCulled={false}>
-      <sphereGeometry args={[1, 12, 10]} />
-      <meshPhysicalMaterial color="#7a3e16" roughness={0.05} clearcoat={1} emissive="#5a2a0a" emissiveIntensity={0.35} />
+      <sphereGeometry args={[1, 16, 12]} />
+      {/* real liquid: light passes through (amber core), dark body, sharp wet reflection */}
+      <meshPhysicalMaterial
+        color="#c9874a"
+        transmission={0.75}
+        thickness={0.4}
+        ior={1.34}
+        attenuationColor="#3a1606"
+        attenuationDistance={0.06}
+        roughness={0.03}
+        clearcoat={1}
+        clearcoatRoughness={0.02}
+        specularIntensity={1}
+      />
     </instancedMesh>
   );
 });

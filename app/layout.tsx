@@ -8,7 +8,7 @@ import "@fontsource/cormorant-garamond/400-italic.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "KAS Coffee — Every Bean Has a Story",
+  title: "KASH Coffee — Every Bean Has a Story",
   description: "Artisan small-batch specialty coffee. An immersive 3D coffee experience. (Demo brand)",
 };
 

@@ -32,7 +32,7 @@ function makeFlowTexture() {
 }
 
 /** A glossy coffee stream from the tilted cup's lip, curving down into the second cup. */
-export default function PourStream({ state }: { state: PourState }) {
+export default function PourStream({ state, flowSpeed = 2.4 }: { state: PourState; flowSpeed?: number }) {
   const mesh = useRef<THREE.Mesh>(null);
   const tex = useMemo(() => makeFlowTexture(), []);
   const pts = useMemo(() => [0, 1, 2, 3, 4].map(() => new THREE.Vector3()), []);
@@ -49,7 +49,7 @@ export default function PourStream({ state }: { state: PourState }) {
     const { lip, target, amount, scale } = state;
     m.visible = amount > 0.01;
     if (!m.visible) return;
-    tex.offset.x -= dt * 2.4;
+    tex.offset.x -= dt * flowSpeed;
 
     // lip → short outward arc → free fall into the target
     const dx = target.x - lip.x;

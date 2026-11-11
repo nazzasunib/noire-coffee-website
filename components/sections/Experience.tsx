@@ -1,19 +1,18 @@
 "use client";
 
-import LivePhoto from "@/components/ui/LivePhoto";
-import CupSteam from "@/components/ui/CupSteam";
-import SlowSplash from "@/components/ui/SlowSplash";
+import dynamic from "next/dynamic";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import Reveal from "@/components/ui/Reveal";
+import { useIsMobile } from "@/hooks/useMedia";
+
+const OverflowScene = dynamic(() => import("@/components/three/OverflowScene"), { ssr: false });
 
 export default function Experience() {
   const root = useRef<HTMLElement>(null);
+  const mobile = useIsMobile();
   useGSAP(
     () => {
-      gsap.fromTo(".exp-bg", { scale: 1.25, yPercent: -8 }, { scale: 1, yPercent: 8, ease: "none", scrollTrigger: { trigger: root.current, start: "top bottom", end: "bottom top", scrub: true } });
-      gsap.fromTo(".exp-card-a", { yPercent: 40 }, { yPercent: -40, ease: "none", scrollTrigger: { trigger: root.current, start: "top bottom", end: "bottom top", scrub: true } });
-      gsap.fromTo(".exp-card-b", { yPercent: 70 }, { yPercent: -60, ease: "none", scrollTrigger: { trigger: root.current, start: "top bottom", end: "bottom top", scrub: true } });
       gsap.fromTo(".exp-frame", { clipPath: "inset(18% 22% 18% 22% round 24px)" }, { clipPath: "inset(0% 0% 0% 0% round 0px)", ease: "none", scrollTrigger: { trigger: root.current, start: "top 80%", end: "top top", scrub: true } });
     },
     { scope: root },
@@ -21,16 +20,17 @@ export default function Experience() {
 
   return (
     <section ref={root} aria-label="Brand experience" className="relative min-h-[100svh] overflow-hidden bg-noir">
-      <div className="exp-frame absolute inset-0">
-        <LivePhoto src="/images/glass-splash.webp" alt="Espresso splashing out of a glass cup with flying coffee beans" sizes="100vw" className="exp-bg" variant={2}>
-          <SlowSplash x={58} y={46} spread={30} rate={22} power={1.3} />
-        </LivePhoto>
-        <div className="absolute inset-0 bg-gradient-to-r from-noir via-noir/70 to-noir/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-noir/60" />
+      <div className="exp-frame absolute inset-0 bg-[radial-gradient(ellipse_55%_60%_at_72%_62%,rgba(150,85,40,0.35),transparent_70%),radial-gradient(ellipse_40%_40%_at_90%_10%,rgba(196,154,98,0.15),transparent_70%)]">
+        {/* coffee pours in from the side, fills the cup and spills over — in slow motion */}
+        <div className="absolute inset-0" role="img" aria-label="Coffee pouring into a black cup until it overflows onto the saucer, in slow motion">
+          <OverflowScene mobile={mobile} />
+        </div>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-noir/80 via-noir/10 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-noir/70 via-transparent to-noir/50" />
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-center px-5 py-28 md:px-10">
-        <p className="eyebrow mb-8 flex items-center gap-3"><span className="h-px w-10 bg-gold" />The KAS Experience</p>
+      <div className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-start px-5 pb-28 pt-24 md:justify-center md:py-28 md:px-10">
+        <p className="eyebrow mb-8 flex items-center gap-3"><span className="h-px w-10 bg-gold" />The KASH Experience</p>
         <Reveal
           className="display max-w-4xl text-[13vw] md:text-[7vw] xl:text-[108px]"
           lines={["Made for", { text: "the moments", className: "italic text-gold" }, "that matter."]}
@@ -39,17 +39,6 @@ export default function Experience() {
         <p className="mt-8 max-w-md text-[15px] leading-relaxed text-cream/70">
           The quiet first cup. The late-night conversation. The pause between everything. We roast for those.
         </p>
-      </div>
-
-      <div className="exp-card-a absolute bottom-[12%] right-[6%] z-10 hidden aspect-square w-[20vw] max-w-[300px] overflow-hidden border-[6px] border-noir shadow-2xl md:block">
-        <LivePhoto src="/images/crown-splash.webp" alt="Coffee crown splash" sizes="20vw" variant={1}>
-          <SlowSplash x={54} y={50} spread={24} rate={14} power={0.8} />
-        </LivePhoto>
-      </div>
-      <div className="exp-card-b absolute right-[24%] top-[18%] z-10 hidden aspect-[3/4] w-[13vw] max-w-[200px] overflow-hidden border-[6px] border-noir shadow-2xl lg:block">
-        <LivePhoto src="/images/smoke-cup.webp" alt="Steaming black coffee" sizes="13vw">
-          <CupSteam x={50} y={62} w={40} />
-        </LivePhoto>
       </div>
     </section>
   );
