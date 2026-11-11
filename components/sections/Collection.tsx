@@ -6,7 +6,9 @@ import { products, formatPrice, type Product } from "@/lib/products";
 import { useStore } from "@/context/StoreContext";
 import Reveal from "@/components/ui/Reveal";
 import FadeUp from "@/components/ui/FadeUp";
-import BagSpin from "@/components/ui/BagSpin";
+import dynamic from "next/dynamic";
+
+const CardBag3D = dynamic(() => import("@/components/three/CardBag3D"), { ssr: false });
 import { scrollToId } from "@/lib/smooth";
 
 function ProductCard({ product, index }: { product: Product; index: number }) {
@@ -45,10 +47,9 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
       </div>
 
       <div className="relative mx-auto my-8 flex h-64 w-full items-center justify-center [transform-style:preserve-3d]">
-        <div className="absolute bottom-0 h-8 w-32 rounded-[50%] bg-black/70 blur-xl" />
         <div className="absolute h-44 w-44 rounded-full bg-gold/0 blur-3xl transition-colors duration-700 group-hover:bg-gold/15" />
-        <div ref={art} className="relative h-60 w-[154px] transition-transform duration-700 ease-out">
-          <BagSpin product={product} delay={index * 2.7} />
+        <div ref={art} className="relative h-64 w-full transition-transform duration-700 ease-out">
+          <CardBag3D product={product} offset={index * 1.6} />
         </div>
       </div>
 

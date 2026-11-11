@@ -115,8 +115,8 @@ function Rig({ mobile }: { mobile: boolean }) {
     pour.scale = S;
 
     // splashes where the stream lands
-    if (flow > 0.3 && droplets.current && Math.random() < 0.7) {
-      droplets.current.burst(pour.target, { count: 2, up: [0.6, 1.3], out: [0.1, 0.4], size: [0.008 * S * 1.6, 0.02 * S * 1.6], floor: surfaceY - 0.04 });
+    if (flow > 0.3 && droplets.current && Math.random() < 0.3) {
+      droplets.current.burst(pour.target, { count: 1, up: [0.6, 1.3], out: [0.1, 0.4], size: [0.006 * S, 0.014 * S], floor: surfaceY - 0.04 });
     }
 
     // crown splash on a slow loop (and on click) while cup 1 rests
@@ -124,7 +124,7 @@ function Rig({ mobile }: { mobile: boolean }) {
       if (!droplets.current) return;
       tmp.set(0, CUP.liquidY + 0.02, 0);
       i.localToWorld(tmp);
-      droplets.current.burst(tmp, { count: Math.round(40 * strength), ring: 0.62 * S, up: [1.8, 3.0], out: [0.5, 1.2], size: [0.012, 0.03], floor: tmp.y - 0.1 });
+      droplets.current.burst(tmp, { count: Math.round(16 * strength), ring: 0.55 * S, up: [1.4, 2.4], out: [0.3, 0.8], size: [0.008, 0.02], floor: tmp.y - 0.1 });
     };
     if (p < 0.05 && t - lastCrown.current > 7) {
       lastCrown.current = t;
@@ -144,7 +144,7 @@ function Rig({ mobile }: { mobile: boolean }) {
   });
 
   const onImpact = (pos: THREE.Vector3) =>
-    droplets.current?.burst(pos, { count: mobile ? 10 : 16, up: [1.1, 2.1], out: [0.25, 0.8], size: [0.01, 0.024], floor: pos.y - 0.05 });
+    droplets.current?.burst(pos, { count: mobile ? 4 : 6, up: [0.9, 1.7], out: [0.15, 0.5], size: [0.007, 0.016], floor: pos.y - 0.05 });
 
   return (
     <>

@@ -8,6 +8,8 @@ import FadeUp from "@/components/ui/FadeUp";
 import CupSteam from "@/components/ui/CupSteam";
 import LivePhoto from "@/components/ui/LivePhoto";
 
+const BeanFallScene = dynamic(() => import("@/components/three/BeanFallScene"), { ssr: false });
+
 const StoryCupScene = dynamic(() => import("@/components/three/StoryCupScene"), {
   ssr: false,
   loading: () => <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_20%_15%,#8a6a50_0%,#3a2a20_45%,#140e0b_100%)]" />,
@@ -123,9 +125,15 @@ export default function Story() {
               <div className="story-frame relative aspect-[4/3] overflow-hidden">
                 <div className="story-media absolute inset-0">
                   <div className="absolute inset-0 transition-transform duration-[1.6s] ease-expo group-hover:scale-110">
-                    <LivePhoto src={c.img} alt={c.title} sizes="(min-width: 768px) 33vw, 100vw" variant={((i % 3) as 0 | 1 | 2)}>
-                      <CupSteam {...c.steam} />
-                    </LivePhoto>
+                    {i === 0 ? (
+                      <div className="absolute inset-0" role="img" aria-label={c.title}>
+                        <BeanFallScene />
+                      </div>
+                    ) : (
+                      <LivePhoto src={c.img} alt={c.title} sizes="(min-width: 768px) 33vw, 100vw" variant={((i % 3) as 0 | 1 | 2)}>
+                        <CupSteam {...c.steam} />
+                      </LivePhoto>
+                    )}
                   </div>
                 </div>
                 <span className="absolute left-4 top-4 rounded-full border border-cream/30 bg-noir/40 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-cream backdrop-blur">

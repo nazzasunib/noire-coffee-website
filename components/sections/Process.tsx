@@ -6,13 +6,14 @@ import SlowSplash from "@/components/ui/SlowSplash";
 import dynamic from "next/dynamic";
 
 const FloatingCupsScene = dynamic(() => import("@/components/three/FloatingCupsScene"), { ssr: false });
+const BeanFallScene = dynamic(() => import("@/components/three/BeanFallScene"), { ssr: false });
 import { useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import Reveal from "@/components/ui/Reveal";
 
 function Overlay({ k }: { k: string }) {
   if (k === "Roast") return <CupSteam x={45} y={30} w={40} warm />;
-  if (k === "Brew") return <SlowSplash x={47} y={50} spread={40} rate={22} power={0.9} />;
+  if (k === "Brew") return <SlowSplash x={47} y={50} spread={40} rate={14} power={0.85} />;
   return null;
 }
 
@@ -99,7 +100,11 @@ export default function Process() {
                   clipPath: i === active ? "inset(0% 0% 0% 0%)" : i < active ? "inset(0% 0% 100% 0%)" : "inset(100% 0% 0% 0%)",
                 }}
               >
-                {s.k === "Enjoy" ? (
+                {s.k === "Source" ? (
+                  <div className="absolute inset-0" role="img" aria-label="Roasted coffee beans falling past a white cup">
+                    <BeanFallScene active={i === active} />
+                  </div>
+                ) : s.k === "Enjoy" ? (
                   <div className="absolute inset-0" role="img" aria-label="Cups and saucers floating weightlessly around a steaming cup">
                     <FloatingCupsScene active={i === active} />
                   </div>
@@ -124,7 +129,11 @@ export default function Process() {
           {STEPS.map((s, i) => (
             <article key={s.k} className="process-step-m">
               <div className="relative aspect-[4/3] overflow-hidden">
-                {s.k === "Enjoy" ? (
+                {s.k === "Source" ? (
+                  <div className="absolute inset-0" role="img" aria-label="Roasted coffee beans falling past a white cup">
+                    <BeanFallScene />
+                  </div>
+                ) : s.k === "Enjoy" ? (
                   <div className="absolute inset-0" role="img" aria-label="Cups and saucers floating weightlessly around a steaming cup">
                     <FloatingCupsScene />
                   </div>
