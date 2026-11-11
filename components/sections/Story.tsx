@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import Reveal from "@/components/ui/Reveal";
 import FadeUp from "@/components/ui/FadeUp";
+import CupSteam from "@/components/ui/CupSteam";
 
 const STATS = [
   { n: "12", l: "Partner farms" },
@@ -19,7 +20,7 @@ export default function Story() {
     () => {
       // cinematic mask reveal for each framed image
       gsap.utils.toArray<HTMLElement>(".story-frame").forEach((frame) => {
-        const img = frame.querySelector("img");
+        const img = frame.querySelector<HTMLElement>(".story-media") ?? frame.querySelector("img");
         gsap.fromTo(frame, { clipPath: "inset(100% 0% 0% 0%)" }, {
           clipPath: "inset(0% 0% 0% 0%)",
           duration: 1.6,
@@ -104,13 +105,18 @@ export default function Story() {
         {/* origin journey */}
         <div className="mt-36 grid gap-6 md:mt-52 md:grid-cols-3">
           {[
-            { img: "/images/beans-cup.webp", step: "Origin", title: "Grown on volcanic slopes", body: "Hand-picked at peak ripeness, one cherry at a time." },
-            { img: "/images/clay-cup.webp", step: "Craft", title: "Roasted with patience", body: "Small batches, profiled by ear, smell and colour." },
-            { img: "/images/swirl-cup.webp", step: "Ritual", title: "Poured with intent", body: "A cup that asks you to slow down — and rewards you." },
+            { img: "/images/beans-cup.webp", step: "Origin", title: "Grown on volcanic slopes", body: "Hand-picked at peak ripeness, one cherry at a time.", steam: { x: 87, y: 50, w: 26 } },
+            { img: "/images/clay-cup.webp", step: "Craft", title: "Roasted with patience", body: "Small batches, profiled by ear, smell and colour.", steam: { x: 48, y: 52, w: 30 } },
+            { img: "/images/swirl-cup.webp", step: "Ritual", title: "Poured with intent", body: "A cup that asks you to slow down — and rewards you.", steam: { x: 54, y: 40, w: 34, warm: true } },
           ].map((c, i) => (
             <article key={c.step} className={`group ${i === 1 ? "md:mt-24" : ""}`}>
               <div className="story-frame relative aspect-[4/3] overflow-hidden">
-                <Image src={c.img} alt={c.title} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover transition-transform duration-[1.6s] ease-expo group-hover:scale-110" />
+                <div className="story-media absolute inset-0">
+                  <div className="absolute inset-0 transition-transform duration-[1.6s] ease-expo group-hover:scale-110">
+                    <Image src={c.img} alt={c.title} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
+                    <CupSteam {...c.steam} />
+                  </div>
+                </div>
                 <span className="absolute left-4 top-4 rounded-full border border-cream/30 bg-noir/40 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-cream backdrop-blur">
                   0{i + 1} · {c.step}
                 </span>
