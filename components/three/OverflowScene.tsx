@@ -28,21 +28,51 @@ function saucerTop(r: number) {
   return 0.14;
 }
 
-function useFlowTexture() {
+/** Overflow side, in cup-local angle (faces the camera, a little to the left). */
+const SPILL_A = -CUP_TURN - 0.35;
+const SPILL_SPAN = 1.5; // radians of rim the sheet spills over
+const COLS = 36;
+const ROWS = 46;
+const RIM_R = cupRadiusAt(CUP.height);
+const WALL_END = 1.3; // path length at which the flow leaves the wall and reaches the saucer
+
+/** Point on the flow path, `s` = distance travelled from the rim. Hugs the wall, then runs onto the saucer. */
+function flowPoint(theta: number, s: number, thick: number, out: THREE.Vector3) {
+  let r: number, y: number;
+  if (s < 0.06) {
+    // curl over the lip
+    const k = s / 0.06;
+    r = RIM_R - 0.03 + k * 0.05 + thick;
+    y = CUP.height + 0.025 - k * k * 0.03;
+  } else if (s < WALL_END) {
+    y = CUP.height - 0.005 - (s - 0.06) * ((CUP.height - 0.04) / (WALL_END - 0.06));
+    r = cupRadiusAt(Math.max(0.04, y)) + thick;
+  } else {
+    r = cupRadiusAt(0.04) + (s - WALL_END) + thick * 0.3;
+    y = saucerTop(r) + 0.004 + thick * 0.5;
+  }
+  out.set(Math.sin(theta) * r, y, Math.cos(theta) * r);
+  return out;
+}
+
+function useStreakTexture() {
   return useMemo(() => {
     const cv = document.createElement("canvas");
-    cv.width = 128;
-    cv.height = 16;
+    cv.width = 64;
+    cv.height = 256;
     const ctx = cv.getContext("2d")!;
-    const g = ctx.createLinearGradient(0, 0, 0, 16);
-    g.addColorStop(0, "#2a1208");
-    g.addColorStop(0.5, "#8a4a1e");
-    g.addColorStop(1, "#2a1208");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 128, 16);
-    for (let i = 0; i < 20; i++) {
-      ctx.fillStyle = `rgba(235,175,115,${Math.random() * 0.3})`;
-      ctx.fillRect(Math.random() * 128, Math.random() * 16, 10 + Math.random() * 30, 1);
+    ctx.fillStyle = "#5a2a10";
+    ctx.fillRect(0, 0, 64, 256);
+    // long vertical streaks = liquid running down
+    for (let i = 0; i < 70; i++) {
+      const x = Math.random() * 64;
+      const w = 0.6 + Math.random() * 2.2;
+      const l = 30 + Math.random() * 160;
+      const y = Math.random() * 256;
+      const light = Math.random() > 0.55;
+      ctx.fillStyle = light ? `rgba(200,120,55,${0.15 + Math.random() * 0.3})` : `rgba(25,10,3,${0.2 + Math.random() * 0.3})`;
+      ctx.fillRect(x, y, w, l);
+      ctx.fillRect(x, y - 256, w, l);
     }
     const t = new THREE.CanvasTexture(cv);
     t.colorSpace = THREE.SRGBColorSpace;
@@ -51,101 +81,154 @@ function useFlowTexture() {
   }, []);
 }
 
-/** Coffee running down the outside of the cup and onto the saucer, growing slowly. */
-function Rivulets({ clock }: { clock: { current: number } }) {
-  const tex = useFlowTexture();
-  const defs = useMemo(
+/**
+ * The overflow: one continuous sheet of coffee spilling over the low side of the rim,
+ * clinging to the wall and breaking into uneven fingers that taper as they run down,
+ * then spreading onto the saucer. Grows in slow motion once the cup is full.
+ */
+function OverflowSheet({ clock }: { clock: { current: number } }) {
+  const tex = useStreakTexture();
+  const mesh = useRef<THREE.Mesh>(null);
+  const geo = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    const n = (COLS + 1) * (ROWS + 1);
+    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+    g.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(n * 2), 2));
+    const idx: number[] = [];
+    for (let v = 0; v < ROWS; v++)
+      for (let u = 0; u < COLS; u++) {
+        const a = v * (COLS + 1) + u;
+        const b = a + 1;
+        const c = a + COLS + 1;
+        const d = c + 1;
+        idx.push(a, c, b, b, c, d);
+      }
+    g.setIndex(idx);
+    return g;
+  }, []);
+  // each column gets its own finger length + speed, so the front is ragged like real liquid
+  const cols = useMemo(
     () =>
-      [-0.45, -0.05, 0.35, -0.85, 0.7, -1.2].map((off, i) => ({
-        a: -CUP_TURN + off,
-        delay: i * 0.9,
-        r: 0.026 + (i % 3) * 0.006,
-        wobble: Math.random() * 6,
-      })),
+      Array.from({ length: COLS + 1 }, (_, u) => {
+        const x = u / COLS;
+        const edge = Math.pow(Math.sin(Math.PI * x), 0.7); // shorter at the sheet's edges
+        const finger = 0.35 + 0.65 * Math.pow(Math.abs(Math.sin(x * 11 + 1.3)), 1.4);
+        return { reach: edge * finger, lag: Math.random() * 0.6, wander: Math.random() * 6 };
+      }),
     [],
   );
-  const meshes = useRef<(THREE.Mesh | null)[]>([]);
+  const p = useMemo(() => new THREE.Vector3(), []);
+  const last = useRef(-1);
 
-  const pathFor = (a: number, wobble: number, progress: number) => {
-    const pts: THREE.Vector3[] = [];
-    const steps = 18;
-    const n = Math.max(2, Math.ceil(steps * progress));
-    for (let k = 0; k <= n; k++) {
-      const u = Math.min(1, k / steps);
-      let x: number, y: number, z: number;
-      if (u < 0.82) {
-        // down the outer wall
-        const y0 = CUP.height + 0.02 - (u / 0.82) * (CUP.height - 0.06);
-        const rr = cupRadiusAt(y0) + 0.018;
-        const aa = a + Math.sin(u * 6 + wobble) * 0.04;
-        x = Math.sin(aa) * rr;
-        z = Math.cos(aa) * rr;
-        y = y0;
-      } else {
-        // out across the saucer
-        const v = (u - 0.82) / 0.18;
-        const rr = 0.56 + v * 0.42;
-        x = Math.sin(a) * rr;
-        z = Math.cos(a) * rr;
-        y = saucerTop(rr) + 0.015;
-      }
-      pts.push(new THREE.Vector3(x, y, z));
-    }
-    return new THREE.CatmullRomCurve3(pts);
-  };
+  useEffect(() => () => {
+    geo.dispose();
+    tex.dispose();
+  }, [geo, tex]);
 
   useFrame((_, dt) => {
-    tex.offset.x -= dt * 0.6;
-    const since = clock.current - T_FULL;
-    defs.forEach((d, i) => {
-      const m = meshes.current[i];
-      if (!m) return;
-      const p = Math.min(1, Math.max(0, (since - d.delay) / 4.5));
-      m.visible = p > 0.02;
-      if (!m.visible) return;
-      const geo = new THREE.TubeGeometry(pathFor(d.a, d.wobble, p), 32, d.r, 8, false);
-      m.geometry.dispose();
-      m.geometry = geo;
-    });
+    const m = mesh.current;
+    if (!m) return;
+    tex.offset.y += dt * 0.12; // streaks keep sliding down
+    const since = clock.current - T_FULL + 0.4;
+    m.visible = since > 0;
+    if (!m.visible) return;
+    if (Math.abs(since - last.current) < 0.03) return;
+    last.current = since;
+
+    const pos = geo.attributes.position as THREE.BufferAttribute;
+    const uv = geo.attributes.uv as THREE.BufferAttribute;
+    // sheet widens a little over time as more of the rim brims over
+    const widen = Math.min(1, 0.35 + since * 0.12);
+    for (let u = 0; u <= COLS; u++) {
+      const c = cols[u];
+      const x = u / COLS;
+      // slow motion: the front creeps down, easing out as it reaches the saucer
+      const grow = Math.max(0, since - c.lag);
+      const L = c.reach * (WALL_END + 0.55) * (1 - Math.exp(-grow / 6));
+      for (let v = 0; v <= ROWS; v++) {
+        const k = v / ROWS;
+        const s = k * L;
+        // fingers narrow toward their tips: pull columns toward their neighbours' centre line
+        const taper = 1 - Math.pow(k, 2.2) * 0.15;
+        const theta = SPILL_A + (x - 0.5) * SPILL_SPAN * widen * taper + Math.sin(s * 3 + c.wander) * 0.015;
+        // thick bead at the leading edge, thin film behind it
+        const thick = 0.006 + 0.012 * (1 - k) + (k > 0.85 ? 0.012 * Math.sin(((k - 0.85) / 0.15) * Math.PI) : 0);
+        flowPoint(theta, s, L > 0.001 ? thick : 0, p);
+        const i = v * (COLS + 1) + u;
+        pos.setXYZ(i, p.x, p.y, p.z);
+        uv.setXY(i, x * 1.5, s * 1.6);
+      }
+    }
+    pos.needsUpdate = true;
+    uv.needsUpdate = true;
+    geo.computeVertexNormals();
+    geo.computeBoundingSphere();
   });
 
   return (
-    <group>
-      {defs.map((_, i) => (
-        <mesh key={i} ref={(el) => (meshes.current[i] = el)} visible={false}>
-          <bufferGeometry />
-          <meshPhysicalMaterial map={tex} roughness={0.12} clearcoat={1} emissive="#2a1206" emissiveIntensity={0.3} />
-        </mesh>
-      ))}
-    </group>
+    <mesh ref={mesh} geometry={geo} visible={false}>
+      <meshPhysicalMaterial
+        map={tex}
+        color="#d0905a"
+        roughness={0.04}
+        clearcoat={1}
+        clearcoatRoughness={0.02}
+        transparent
+        opacity={0.94}
+        side={THREE.DoubleSide}
+        emissive="#3a1806"
+        emissiveIntensity={0.35}
+      />
+    </mesh>
   );
 }
 
-/** Coffee pooling on the saucer, spreading outwards over time. */
+/** Coffee spreading across the saucer from the spill side: an irregular, glossy pool. */
 function Puddle({ clock }: { clock: { current: number } }) {
   const mesh = useRef<THREE.Mesh>(null);
+  const SEG = 72;
+  const geo = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array((SEG + 1) * 3), 3));
+    const idx: number[] = [];
+    for (let i = 1; i < SEG; i++) idx.push(0, i, i + 1);
+    idx.push(0, SEG, 1);
+    g.setIndex(idx);
+    return g;
+  }, []);
+  const noise = useMemo(() => Array.from({ length: SEG }, () => 0.75 + Math.random() * 0.5), []);
   const last = useRef(-1);
+  useEffect(() => () => geo.dispose(), [geo]);
+
   useFrame(() => {
     const m = mesh.current;
     if (!m) return;
-    const p = Math.min(1, Math.max(0, (clock.current - T_FULL - 2.5) / 14));
-    m.visible = p > 0.01;
-    if (!m.visible || Math.abs(p - last.current) < 0.01) return;
-    last.current = p;
-    const outer = 0.55 + p * 1.0;
-    const pts: THREE.Vector2[] = [];
-    for (let k = 0; k <= 16; k++) {
-      const r = 0.5 + (k / 16) * (outer - 0.5);
-      pts.push(new THREE.Vector2(r, saucerTop(r) + 0.012));
+    const since = clock.current - T_FULL - 2.2;
+    m.visible = since > 0;
+    if (!m.visible || Math.abs(since - last.current) < 0.05) return;
+    last.current = since;
+    const p = 1 - Math.exp(-since / 9);
+    const pos = geo.attributes.position as THREE.BufferAttribute;
+    pos.setXYZ(0, 0, 0.005, 0);
+    const base = cupRadiusAt(0.04) - 0.02;
+    for (let i = 0; i < SEG; i++) {
+      const th = (i / SEG) * Math.PI * 2;
+      // pool is strongest on the spill side and wraps round the foot more slowly
+      let d = Math.atan2(Math.sin(th - SPILL_A), Math.cos(th - SPILL_A));
+      const lobe = Math.exp(-(d * d) / (0.9 + p * 1.6));
+      const smoothN = (noise[i] + noise[(i + 1) % SEG] + noise[(i + SEG - 1) % SEG]) / 3;
+      const r = Math.min(1.5, base + p * (0.15 + 0.95 * lobe) * smoothN);
+      const y = saucerTop(r) + 0.006 * (1 - r / 1.6) + 0.003;
+      pos.setXYZ(i + 1, Math.sin(th) * r, y, Math.cos(th) * r);
     }
-    const geo = new THREE.LatheGeometry(pts, 64);
-    m.geometry.dispose();
-    m.geometry = geo;
+    pos.needsUpdate = true;
+    geo.computeVertexNormals();
+    geo.computeBoundingSphere();
   });
+
   return (
-    <mesh ref={mesh} visible={false} position={[0, -0.1 + 0.1, 0]}>
-      <bufferGeometry />
-      <meshPhysicalMaterial color="#3a1a0a" roughness={0.08} clearcoat={1} side={THREE.DoubleSide} />
+    <mesh ref={mesh} geometry={geo} visible={false}>
+      <meshPhysicalMaterial color="#5a2a10" emissive="#1e0b03" roughness={0.03} clearcoat={1} clearcoatRoughness={0.02} side={THREE.DoubleSide} />
     </mesh>
   );
 }
@@ -156,7 +239,6 @@ function Rig({ mobile }: { mobile: boolean }) {
   const clock = useRef(0);
   const drops = useRef<DropletsHandle>(null);
   const pour = useMemo<PourState>(() => ({ lip: new THREE.Vector3(), target: new THREE.Vector3(), amount: 0, scale: 1 }), []);
-  const tmp = useMemo(() => new THREE.Vector3(), []);
   const { camera } = useThree();
 
   const S = mobile ? 0.8 : 1.05;
@@ -187,15 +269,8 @@ function Rig({ mobile }: { mobile: boolean }) {
 
     if (!drops.current) return;
     // splashes where the stream lands
-    if (pour.amount > 0.5 && Math.random() < 0.6) {
-      drops.current.burst(pour.target, { count: 2, up: [0.8, 1.6], out: [0.2, 0.6], size: [0.012 * S, 0.026 * S], floor: surfaceY - 0.05 });
-    }
-    // overflow: drops tumble over the front of the rim
-    if (t > T_FULL - 0.3 && Math.random() < 0.55) {
-      const a = -CUP_TURN + (Math.random() - 0.5) * 2.6 + g.rotation.y;
-      const r = cupRadiusAt(CUP.height) * S;
-      tmp.set(POS.x + Math.sin(a) * r, POS.y + (CUP.height + 0.02) * S, Math.cos(a) * r);
-      drops.current.burst(tmp, { count: 1, up: [0.05, 0.4], out: [0.15, 0.45], size: [0.018 * S, 0.034 * S], floor: POS.y + 0.02 * S });
+    if (pour.amount > 0.5 && Math.random() < 0.3) {
+      drops.current.burst(pour.target, { count: 1, up: [0.6, 1.2], out: [0.15, 0.45], size: [0.006 * S, 0.014 * S], floor: surfaceY - 0.02 });
     }
   });
 
@@ -203,7 +278,7 @@ function Rig({ mobile }: { mobile: boolean }) {
     <>
       <group ref={cup}>
         <CoffeeCup fillRef={fill} />
-        <Rivulets clock={clock} />
+        <OverflowSheet clock={clock} />
         <Puddle clock={clock} />
       </group>
       <PourStream state={pour} flowSpeed={1.1} />
