@@ -1,4 +1,4 @@
-# NOIRÉ COFFEE — Interactive 3D Coffee Experience
+# KAS COFFEE — Interactive 3D Coffee Experience
 
 Every Bean Has a Story. A premium, cinematic coffee brand website (demo brand).
 
