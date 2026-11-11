@@ -20,7 +20,7 @@ export default function Footer() {
     <footer className="relative overflow-hidden border-t border-gold/15 bg-[#0b0705] pt-24">
       <div className="mx-auto grid max-w-[1400px] gap-14 px-5 md:grid-cols-12 md:px-10">
         <div className="md:col-span-5">
-          <div className="font-serif text-4xl tracking-[0.18em]">NOIRÉddddddddddd</div>
+          <div className="font-serif text-4xl tracking-[0.18em]">NOIRÉdd</div>
           <div className="mt-1 text-[9px] font-semibold tracking-[0.5em] text-gold">ARTISAN COFFEE</div>
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-cream/50">
             Small-batch specialty coffee, sourced directly and roasted with patience. Every bean has a story — we just help it speak.
