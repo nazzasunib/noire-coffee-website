@@ -126,3 +126,17 @@ body {
   75%  { transform: translate(calc(var(--drift) * -0.3), -85%) scale(calc(1.1 * var(--size)), calc(1.15 * var(--size))) rotate(5deg); opacity: 0.3; }
   100% { transform: translate(var(--drift), -140%) scale(calc(1.4 * var(--size)), calc(1.3 * var(--size))) rotate(-4deg); opacity: 0; }
 }
+
+/* Living photos: slow drift so nothing on the page is ever a still */
+.kenburns { will-change: transform; animation: kb0 22s ease-in-out infinite alternate; }
+.kenburns-1 { animation-name: kb1; animation-duration: 26s; }
+.kenburns-2 { animation-name: kb2; animation-duration: 19s; }
+@keyframes kb0 { from { transform: scale(1.04) translate(0, 0); } to { transform: scale(1.14) translate(-2%, -1.5%); } }
+@keyframes kb1 { from { transform: scale(1.12) translate(-2%, 1%); } to { transform: scale(1.03) translate(1.5%, -1%); } }
+@keyframes kb2 { from { transform: scale(1.05) translate(1.5%, 0); } to { transform: scale(1.15) translate(-1%, 1.5%); } }
+
+/* Spinning 3D pouch (product cards) */
+.bag-spin { transform-style: preserve-3d; animation: bag-spin 11s linear infinite; }
+.bag-spin-wrap:hover .bag-spin { animation-duration: 4s; }
+@keyframes bag-spin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+.bag-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 10px 10px 6px 6px; overflow: hidden; }

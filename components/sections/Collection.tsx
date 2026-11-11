@@ -6,7 +6,7 @@ import { products, formatPrice, type Product } from "@/lib/products";
 import { useStore } from "@/context/StoreContext";
 import Reveal from "@/components/ui/Reveal";
 import FadeUp from "@/components/ui/FadeUp";
-import BagArt from "@/components/ui/BagArt";
+import BagSpin from "@/components/ui/BagSpin";
 import { scrollToId } from "@/lib/smooth";
 
 function ProductCard({ product, index }: { product: Product; index: number }) {
@@ -48,7 +48,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
         <div className="absolute bottom-0 h-8 w-32 rounded-[50%] bg-black/70 blur-xl" />
         <div className="absolute h-44 w-44 rounded-full bg-gold/0 blur-3xl transition-colors duration-700 group-hover:bg-gold/15" />
         <div ref={art} className="relative h-60 w-[154px] transition-transform duration-700 ease-out">
-          <BagArt product={product} className="h-full w-full drop-shadow-[0_30px_30px_rgba(0,0,0,0.6)]" />
+          <BagSpin product={product} delay={index * 2.7} />
         </div>
       </div>
 

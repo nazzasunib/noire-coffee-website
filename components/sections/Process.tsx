@@ -1,9 +1,18 @@
 "use client";
 
-import Image from "next/image";
+import LivePhoto from "@/components/ui/LivePhoto";
+import CupSteam from "@/components/ui/CupSteam";
+import SlowSplash from "@/components/ui/SlowSplash";
 import { useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import Reveal from "@/components/ui/Reveal";
+
+function Overlay({ k }: { k: string }) {
+  if (k === "Roast") return <CupSteam x={45} y={30} w={40} warm />;
+  if (k === "Brew") return <SlowSplash x={47} y={52} spread={36} rate={30} />;
+  if (k === "Enjoy") return <CupSteam x={49} y={63} w={16} />;
+  return null;
+}
 
 const STEPS = [
   { k: "Source", t: "Carefully selected coffee beans.", d: "We cup hundreds of samples each season and choose only lots scoring 86+ — bought directly from the families who grow them.", img: "/images/beans-cup.webp", bg: "#120c09" },
@@ -88,7 +97,9 @@ export default function Process() {
                   clipPath: i === active ? "inset(0% 0% 0% 0%)" : i < active ? "inset(0% 0% 100% 0%)" : "inset(100% 0% 0% 0%)",
                 }}
               >
-                <Image src={s.img} alt={`${s.k}: ${s.t}`} fill sizes="50vw" className={`object-cover transition-transform duration-[1.6s] ease-expo ${i === active ? "scale-100" : "scale-125"}`} />
+                <LivePhoto src={s.img} alt={`${s.k}: ${s.t}`} sizes="50vw" variant={(i % 3) as 0 | 1 | 2} className={`transition-transform duration-[1.6s] ease-expo ${i === active ? "scale-100" : "scale-125"}`}>
+                  {i === active && <Overlay k={s.k} />}
+                </LivePhoto>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               </div>
             ))}
@@ -105,7 +116,9 @@ export default function Process() {
           {STEPS.map((s, i) => (
             <article key={s.k} className="process-step-m">
               <div className="relative aspect-[4/3] overflow-hidden">
-                <Image src={s.img} alt={`${s.k}: ${s.t}`} fill sizes="100vw" className="object-cover" />
+                <LivePhoto src={s.img} alt={`${s.k}: ${s.t}`} sizes="100vw" variant={(i % 3) as 0 | 1 | 2}>
+                  <Overlay k={s.k} />
+                </LivePhoto>
                 <span className="absolute bottom-4 left-4 font-serif text-6xl font-light text-cream/80">0{i + 1}</span>
               </div>
               <h3 className="mt-6 font-serif text-4xl font-light">{s.k}</h3>

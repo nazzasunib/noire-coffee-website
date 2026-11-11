@@ -1,6 +1,8 @@
 "use client";
 
-import Image from "next/image";
+import LivePhoto from "@/components/ui/LivePhoto";
+import CupSteam from "@/components/ui/CupSteam";
+import SlowSplash from "@/components/ui/SlowSplash";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import Reveal from "@/components/ui/Reveal";
@@ -20,13 +22,15 @@ export default function Experience() {
   return (
     <section ref={root} aria-label="Brand experience" className="relative min-h-[100svh] overflow-hidden bg-noir">
       <div className="exp-frame absolute inset-0">
-        <Image src="/images/glass-splash.webp" alt="Espresso splashing out of a glass cup with flying coffee beans" fill sizes="100vw" className="exp-bg object-cover" />
+        <LivePhoto src="/images/glass-splash.webp" alt="Espresso splashing out of a glass cup with flying coffee beans" sizes="100vw" className="exp-bg" variant={2}>
+          <SlowSplash x={58} y={46} spread={30} rate={22} power={1.3} />
+        </LivePhoto>
         <div className="absolute inset-0 bg-gradient-to-r from-noir via-noir/70 to-noir/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-noir/60" />
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-center px-5 py-28 md:px-10">
-        <p className="eyebrow mb-8 flex items-center gap-3"><span className="h-px w-10 bg-gold" />The NOIRÉ Experience</p>
+        <p className="eyebrow mb-8 flex items-center gap-3"><span className="h-px w-10 bg-gold" />The KAS Experience</p>
         <Reveal
           className="display max-w-4xl text-[13vw] md:text-[7vw] xl:text-[108px]"
           lines={["Made for", { text: "the moments", className: "italic text-gold" }, "that matter."]}
@@ -38,10 +42,14 @@ export default function Experience() {
       </div>
 
       <div className="exp-card-a absolute bottom-[12%] right-[6%] z-10 hidden aspect-square w-[20vw] max-w-[300px] overflow-hidden border-[6px] border-noir shadow-2xl md:block">
-        <Image src="/images/crown-splash.webp" alt="Coffee crown splash" fill sizes="20vw" className="object-cover" />
+        <LivePhoto src="/images/crown-splash.webp" alt="Coffee crown splash" sizes="20vw" variant={1}>
+          <SlowSplash x={54} y={50} spread={24} rate={14} power={0.8} />
+        </LivePhoto>
       </div>
       <div className="exp-card-b absolute right-[24%] top-[18%] z-10 hidden aspect-[3/4] w-[13vw] max-w-[200px] overflow-hidden border-[6px] border-noir shadow-2xl lg:block">
-        <Image src="/images/smoke-cup.webp" alt="Steaming black coffee" fill sizes="13vw" className="object-cover" />
+        <LivePhoto src="/images/smoke-cup.webp" alt="Steaming black coffee" sizes="13vw">
+          <CupSteam x={50} y={62} w={40} />
+        </LivePhoto>
       </div>
     </section>
   );

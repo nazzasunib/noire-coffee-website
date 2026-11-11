@@ -1,11 +1,17 @@
 "use client";
 
-import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import Reveal from "@/components/ui/Reveal";
 import FadeUp from "@/components/ui/FadeUp";
 import CupSteam from "@/components/ui/CupSteam";
+import LivePhoto from "@/components/ui/LivePhoto";
+
+const StoryCupScene = dynamic(() => import("@/components/three/StoryCupScene"), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_20%_15%,#8a6a50_0%,#3a2a20_45%,#140e0b_100%)]" />,
+});
 
 const STATS = [
   { n: "12", l: "Partner farms" },
@@ -70,7 +76,7 @@ export default function Story() {
             />
             <FadeUp className="mt-10 space-y-6 text-[15px] leading-[1.85] text-cream/65">
               <p>
-                NOIRÉ began with a single cup in a quiet kitchen at dawn — the kind of cup that makes you stop. We have been chasing
+                KAS began with a single cup in a quiet kitchen at dawn — the kind of cup that makes you stop. We have been chasing
                 that feeling ever since, travelling to the farms behind every bean and roasting in small batches so nothing is lost
                 along the way.
               </p>
@@ -92,12 +98,16 @@ export default function Story() {
 
           <div className="relative md:col-span-6 lg:col-span-6 lg:col-start-7">
             <div className="story-frame relative aspect-[4/5] w-full overflow-hidden rounded-[2px]">
-              <Image src="/images/espresso-light.webp" alt="Espresso in a faceted black cup lit by a ray of morning light" fill sizes="(min-width: 768px) 45vw, 100vw" className="object-cover" />
+              <div className="story-media absolute inset-0" role="img" aria-label="A faceted black espresso cup turning slowly as steam rises">
+                <StoryCupScene />
+              </div>
               <div className="absolute inset-0 bg-gradient-to-t from-noir/60 via-transparent to-transparent" />
               <p className="absolute bottom-6 left-6 font-serif text-xl italic text-cream/90">The first light of the day.</p>
             </div>
             <div className="story-frame absolute -bottom-16 -left-6 hidden aspect-square w-[44%] overflow-hidden rounded-[2px] border-[6px] border-noir shadow-2xl md:block lg:-left-24">
-              <Image src="/images/smoke-cup.webp" alt="Steam curling over a black coffee" fill sizes="20vw" className="object-cover" />
+              <LivePhoto src="/images/smoke-cup.webp" alt="Steam curling over a black coffee" sizes="20vw" className="story-media" variant={1}>
+                <CupSteam x={50} y={60} w={34} />
+              </LivePhoto>
             </div>
           </div>
         </div>
@@ -113,8 +123,9 @@ export default function Story() {
               <div className="story-frame relative aspect-[4/3] overflow-hidden">
                 <div className="story-media absolute inset-0">
                   <div className="absolute inset-0 transition-transform duration-[1.6s] ease-expo group-hover:scale-110">
-                    <Image src={c.img} alt={c.title} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
-                    <CupSteam {...c.steam} />
+                    <LivePhoto src={c.img} alt={c.title} sizes="(min-width: 768px) 33vw, 100vw" variant={((i % 3) as 0 | 1 | 2)}>
+                      <CupSteam {...c.steam} />
+                    </LivePhoto>
                   </div>
                 </div>
                 <span className="absolute left-4 top-4 rounded-full border border-cream/30 bg-noir/40 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-cream backdrop-blur">

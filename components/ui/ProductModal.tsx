@@ -6,7 +6,7 @@ import { Minus, Plus, ShoppingBag, X, Rotate3d } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { products, formatPrice } from "@/lib/products";
 import { getLenis, scrollToId } from "@/lib/smooth";
-import BagArt from "./BagArt";
+import BagSpin from "./BagSpin";
 
 export default function ProductModal() {
   const { state, openDetail, add, setCartOpen } = useStore();
@@ -44,8 +44,8 @@ export default function ProductModal() {
               <X size={18} />
             </button>
             <div className="relative flex min-h-[340px] items-center justify-center overflow-hidden bg-noir p-10" style={{ background: `radial-gradient(circle at 50% 45%, ${product.palette.accent}33, #100b08 70%)` }}>
-              <motion.div initial={{ rotate: -8, y: 30, opacity: 0 }} animate={{ rotate: -3, y: 0, opacity: 1 }} transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }} className="h-[300px] w-[192px] md:h-[400px] md:w-[256px]">
-                <BagArt product={product} className="h-full w-full drop-shadow-[0_40px_40px_rgba(0,0,0,0.7)]" />
+              <motion.div initial={{ rotate: -8, y: 30, opacity: 0 }} animate={{ rotate: -3, y: 0, opacity: 1 }} transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }} className="flex h-[320px] w-[220px] items-center justify-center">
+                <BagSpin product={product} w={200} h={312} />
               </motion.div>
               <div className="absolute bottom-10 h-6 w-40 rounded-[50%] bg-black/70 blur-xl" />
             </div>

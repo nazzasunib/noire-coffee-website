@@ -28,7 +28,7 @@ export default function Contact() {
           <FadeUp className="mt-14 space-y-6">
             {[
               { i: MapPin, t: "Roastery & Café", v: "18 Rue des Torréfacteurs, Paris (demo address)" },
-              { i: Mail, t: "Email", v: "hello@noire-coffee.example" },
+              { i: Mail, t: "Email", v: "hello@kas-coffee.example" },
               { i: Phone, t: "Phone", v: "+00 000 000 000 (demo)" },
             ].map(({ i: Icon, t, v }) => (
               <div key={t} className="flex items-start gap-5 border-b border-cream/10 pb-6">

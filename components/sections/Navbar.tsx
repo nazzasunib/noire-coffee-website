@@ -61,8 +61,8 @@ export default function Navbar() {
         }`}
       >
         <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-5 md:px-10" aria-label="Main">
-          <button onClick={() => go("home")} className="group flex flex-col items-start leading-none" aria-label="NOIRÉ Coffee — home">
-            <span className="font-serif text-2xl tracking-[0.18em] text-cream transition-colors group-hover:text-gold">NOIRÉ</span>
+          <button onClick={() => go("home")} className="group flex flex-col items-start leading-none" aria-label="KAS Coffee — home">
+            <span className="font-serif text-2xl tracking-[0.18em] text-cream transition-colors group-hover:text-gold">KAS</span>
             <span className="mt-1 text-[8px] font-semibold tracking-[0.5em] text-gold">COFFEE</span>
           </button>
 
@@ -130,7 +130,7 @@ export default function Navbar() {
             aria-label="Menu"
           >
             <div className="flex items-center justify-between">
-              <span className="font-serif text-2xl tracking-[0.18em]">NOIRÉ</span>
+              <span className="font-serif text-2xl tracking-[0.18em]">KAS</span>
               <button onClick={() => setOpen(false)} className="flex h-11 w-11 items-center justify-center rounded-full border border-cream/20" aria-label="Close menu">
                 <X size={18} />
               </button>

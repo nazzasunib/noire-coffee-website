@@ -214,7 +214,7 @@ export function drawBagFace(
   ctx.fillStyle = paint(p.accent);
   ctx.font = `500 ${W * 0.085}px ${serif}`;
   if ("letterSpacing" in ctx) (ctx as unknown as { letterSpacing: string }).letterSpacing = `${W * 0.02}px`;
-  ctx.fillText("NOIRÉ", cx, H * 0.2);
+  ctx.fillText("KAS", cx, H * 0.2);
   ctx.font = `600 ${W * 0.022}px ${sans}`;
   if ("letterSpacing" in ctx) (ctx as unknown as { letterSpacing: string }).letterSpacing = `${W * 0.012}px`;
   ctx.fillText("ARTISAN COFFEE", cx, H * 0.235);
@@ -351,10 +351,10 @@ export function createMonogramTexture(size = 256) {
   ctx.font = `500 ${size * 0.2}px "Cormorant Garamond", Georgia, serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("N", size / 2, size * 0.39);
+  ctx.fillText("K", size / 2, size * 0.39);
   ctx.font = `500 ${size * 0.13}px "Cormorant Garamond", Georgia, serif`;
   if ("letterSpacing" in ctx) (ctx as unknown as { letterSpacing: string }).letterSpacing = `${size * 0.02}px`;
-  ctx.fillText("NOIRÉ", size / 2, size * 0.7);
+  ctx.fillText("KAS", size / 2, size * 0.7);
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;

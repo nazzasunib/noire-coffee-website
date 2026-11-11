@@ -41,7 +41,7 @@ export default function Loader() {
       }`}
     >
       <div className="loader-in text-center">
-        <div className="font-serif text-5xl tracking-[0.22em] md:text-7xl">NOIRÉ</div>
+        <div className="font-serif text-5xl tracking-[0.22em] md:text-7xl">KAS</div>
         <div className="mt-3 text-[10px] tracking-[0.5em] text-gold">EVERY BEAN HAS A STORY</div>
       </div>
       <div className="mt-10 h-px w-48 overflow-hidden bg-cream/10">
