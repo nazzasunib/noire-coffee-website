@@ -22,7 +22,7 @@ export type DropletsHandle = { burst: (origin: THREE.Vector3, opts?: BurstOption
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
 /** World-space pool of coffee droplets: stretched along velocity, arcing under gravity. */
-const Droplets = forwardRef<DropletsHandle, { pool?: number }>(function Droplets({ pool = 180 }, ref) {
+const Droplets = forwardRef<DropletsHandle, { pool?: number; timeScale?: number }>(function Droplets({ pool = 180, timeScale = 1 }, ref) {
   const mesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const drops = useMemo<Drop[]>(
@@ -52,7 +52,7 @@ const Droplets = forwardRef<DropletsHandle, { pool?: number }>(function Droplets
   useFrame((_, dt) => {
     const m = mesh.current;
     if (!m) return;
-    const step = Math.min(dt, 1 / 30);
+    const step = Math.min(dt, 1 / 30) * timeScale;
     drops.forEach((d, i) => {
       if (d.life > 0) {
         d.v.y -= 7.5 * step;
