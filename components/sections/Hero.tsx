@@ -43,24 +43,33 @@ export default function Hero() {
         .fromTo(".hero-title .line-inner", { yPercent: 115, rotate: 3 }, { yPercent: 0, rotate: 0, duration: 1.6, stagger: 0.12 }, "-=0.9")
         .from(".hero-copy", { y: 24, opacity: 0, duration: 1.2 }, "-=1.1")
         .fromTo(".hero-cta > *", { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 1.1, stagger: 0.1, clearProps: "transform,opacity" }, "-=1")
-        .from(".hero-meta", { opacity: 0, duration: 1.4 }, "-=0.8");
+        .from(".hero-meta > *", { opacity: 0, duration: 1.4 }, "-=0.8");
 
       const play = () => tl.play();
       if (sceneState.ready) play();
       else window.addEventListener("noire:ready", play, { once: true });
 
-      // scroll-out: 3D progress + text drift
-      gsap.to(sceneState, {
-        heroProgress: 1,
-        ease: "none",
-        scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true },
+      // Pin the hero while the pour plays out; progress drives the 3D scene.
+      const pin = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: root.current,
+          start: "top top",
+          end: "+=170%",
+          pin: true,
+          scrub: 0.6,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            sceneState.heroProgress = self.progress;
+          },
+        },
       });
-      gsap.to(".hero-content", {
-        yPercent: -30,
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: { trigger: root.current, start: "top top", end: "70% top", scrub: true },
-      });
+      pin
+        .to(".hero-content", { yPercent: -18, opacity: 0, duration: 0.18 }, 0)
+        .to(".hero-meta", { opacity: 0, duration: 0.1 }, 0)
+        .fromTo(".pour-copy", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.15 }, 0.42)
+        .fromTo(".pour-copy .line-inner", { yPercent: 110 }, { yPercent: 0, duration: 0.2, stagger: 0.04 }, 0.42)
+        .to({}, { duration: 1 - 0.62 }, 0.62);
     },
     { scope: root },
   );
@@ -95,6 +104,15 @@ export default function Hero() {
             Discover Our Story
           </button>
         </div>
+      </div>
+
+      {/* appears while cup 1 pours into cup 2 */}
+      <div className="pour-copy pointer-events-none absolute inset-x-0 bottom-10 z-10 mx-auto max-w-[1400px] px-5 opacity-0 md:bottom-[18vh] md:px-10">
+        <p className="eyebrow mb-4 flex items-center gap-3"><span className="h-px w-10 bg-gold" />The Pour</p>
+        <h2 className="display text-[9vw] md:text-[5vw] xl:text-[76px]">
+          <span className="line-mask"><span className="line-inner">From our cup</span></span>
+          <span className="line-mask"><span className="line-inner italic text-gold">to yours.</span></span>
+        </h2>
       </div>
 
       {/* meta + scroll indicator */}

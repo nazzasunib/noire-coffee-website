@@ -41,11 +41,13 @@ const fragment = /* glsl */ `
   }
 `;
 
-function Wisp({ x, z, seed, height, opacity }: { x: number; z: number; seed: number; height: number; opacity: number }) {
+function Wisp({ x, z, seed, height, opacity, strengthRef }: { x: number; z: number; seed: number; height: number; opacity: number; strengthRef?: { current: number } }) {
   const mat = useRef<THREE.ShaderMaterial>(null);
   const uniforms = useMemo(() => ({ uTime: { value: 0 }, uSeed: { value: seed }, uOpacity: { value: opacity } }), [seed, opacity]);
   useFrame((s) => {
-    if (mat.current) mat.current.uniforms.uTime.value = s.clock.elapsedTime;
+    if (!mat.current) return;
+    mat.current.uniforms.uTime.value = s.clock.elapsedTime;
+    mat.current.uniforms.uOpacity.value = opacity * (strengthRef ? strengthRef.current : 1);
   });
   return (
     <mesh position={[x, height / 2, z]}>
@@ -64,12 +66,12 @@ function Wisp({ x, z, seed, height, opacity }: { x: number; z: number; seed: num
 }
 
 /** Soft rising steam from shader-driven noise planes. */
-export default function Steam() {
+export default function Steam({ strengthRef }: { strengthRef?: { current: number } }) {
   return (
     <group>
-      <Wisp x={-0.12} z={0} seed={0} height={2.6} opacity={0.55} />
-      <Wisp x={0.16} z={0.12} seed={4.2} height={2.2} opacity={0.4} />
-      <Wisp x={0.02} z={-0.15} seed={9.7} height={3} opacity={0.32} />
+      <Wisp x={-0.12} z={0} seed={0} height={2.6} opacity={0.55} strengthRef={strengthRef} />
+      <Wisp x={0.16} z={0.12} seed={4.2} height={2.2} opacity={0.4} strengthRef={strengthRef} />
+      <Wisp x={0.02} z={-0.15} seed={9.7} height={3} opacity={0.32} strengthRef={strengthRef} />
     </group>
   );
 }
