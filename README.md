@@ -1,4 +1,4 @@
-# KAS COFFEE — Interactive 3D Coffee Experience
+# KASH COFFEE — Interactive 3D Coffee Experience
 
 Every Bean Has a Story. A premium, cinematic coffee brand website (demo brand).
 

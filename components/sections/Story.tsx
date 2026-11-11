@@ -76,7 +76,7 @@ export default function Story() {
             />
             <FadeUp className="mt-10 space-y-6 text-[15px] leading-[1.85] text-cream/65">
               <p>
-                KAS began with a single cup in a quiet kitchen at dawn — the kind of cup that makes you stop. We have been chasing
+                KASH began with a single cup in a quiet kitchen at dawn — the kind of cup that makes you stop. We have been chasing
                 that feeling ever since, travelling to the farms behind every bean and roasting in small batches so nothing is lost
                 along the way.
               </p>

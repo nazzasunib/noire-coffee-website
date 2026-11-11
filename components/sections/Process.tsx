@@ -12,7 +12,7 @@ import Reveal from "@/components/ui/Reveal";
 
 function Overlay({ k }: { k: string }) {
   if (k === "Roast") return <CupSteam x={45} y={30} w={40} warm />;
-  if (k === "Brew") return <SlowSplash x={47} y={52} spread={36} rate={30} />;
+  if (k === "Brew") return <SlowSplash x={47} y={50} spread={40} rate={22} power={0.9} />;
   return null;
 }
 

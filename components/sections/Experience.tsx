@@ -30,7 +30,7 @@ export default function Experience() {
       </div>
 
       <div className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-start px-5 pb-28 pt-24 md:justify-center md:py-28 md:px-10">
-        <p className="eyebrow mb-8 flex items-center gap-3"><span className="h-px w-10 bg-gold" />The KAS Experience</p>
+        <p className="eyebrow mb-8 flex items-center gap-3"><span className="h-px w-10 bg-gold" />The KASH Experience</p>
         <Reveal
           className="display max-w-4xl text-[13vw] md:text-[7vw] xl:text-[108px]"
           lines={["Made for", { text: "the moments", className: "italic text-gold" }, "that matter."]}
