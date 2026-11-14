@@ -53,7 +53,7 @@ export default function CardBag3D({ product, speed = 0.55, offset = 0, fast = fa
               <Lightformer form="rect" intensity={3} position={[-3, 0, -1]} scale={[1, 5, 1]} color="#e3b57e" />
             </Environment>
             <Turning product={product} speed={fast ? speed * 1.6 : speed} offset={offset} />
-            <ContactShadows position={[0, -1.2, 0]} opacity={0.65} scale={4} blur={2.4} far={2} />
+            <ContactShadows frames={1} resolution={256} position={[0, -1.2, 0]} opacity={0.65} scale={4} blur={2.4} far={2} />
           </Suspense>
         </Canvas>
       )}

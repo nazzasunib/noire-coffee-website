@@ -1,5 +1,7 @@
+"use client";
+
 import Image from "next/image";
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 /**
  * A photo that is never still: slow Ken Burns drift (CSS) plus optional overlays
@@ -25,8 +27,16 @@ export default function LivePhoto({
   priority?: boolean;
   children?: ReactNode;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [onScreen, setOnScreen] = useState(false);
+  useEffect(() => {
+    if (!ref.current) return;
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting), { rootMargin: "100px" });
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
   return (
-    <div className={`absolute inset-0 overflow-hidden ${className}`}>
+    <div ref={ref} className={`absolute inset-0 overflow-hidden ${onScreen ? "" : "is-offscreen"} ${className}`}>
       <div className={`kenburns kenburns-${variant} absolute inset-0`}>
         <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className={`object-cover ${imgClassName}`} />
         {children}

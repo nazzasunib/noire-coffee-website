@@ -66,7 +66,7 @@ export default function StoryCupScene() {
     <div ref={wrap} className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_20%_15%,#8a6a50_0%,#3a2a20_45%,#140e0b_100%)]">
       <Canvas
         frameloop={visible ? "always" : "never"}
-        dpr={[1, 1.75]}
+        dpr={[1, 1.5]}
         camera={{ position: [0, 2.3, 8.6], fov: 32 }}
         gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping }}
       >

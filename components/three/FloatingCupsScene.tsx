@@ -77,7 +77,7 @@ export default function FloatingCupsScene({ active = true }: { active?: boolean 
     <div ref={wrap} className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_70%,#2b2420_0%,#151110_55%,#0b0908_100%)]">
       <Canvas
         frameloop={visible && active ? "always" : "never"}
-        dpr={[1, 1.75]}
+        dpr={[1, 1.5]}
         camera={{ position: [0, 0.6, 7.2], fov: 38 }}
         gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping }}
       >

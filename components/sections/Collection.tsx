@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { Plus, Eye } from "lucide-react";
 import { products, formatPrice, type Product } from "@/lib/products";
 import { useStore } from "@/context/StoreContext";
@@ -8,7 +8,8 @@ import Reveal from "@/components/ui/Reveal";
 import FadeUp from "@/components/ui/FadeUp";
 import dynamic from "next/dynamic";
 
-const CardBag3D = dynamic(() => import("@/components/three/CardBag3D"), { ssr: false });
+const CardBagView = dynamic(() => import("@/components/three/CardBags").then((m) => m.CardBagView), { ssr: false });
+const CardBagsCanvas = dynamic(() => import("@/components/three/CardBags"), { ssr: false });
 import { scrollToId } from "@/lib/smooth";
 
 function ProductCard({ product, index }: { product: Product; index: number }) {
@@ -49,7 +50,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
       <div className="relative mx-auto my-8 flex h-64 w-full items-center justify-center [transform-style:preserve-3d]">
         <div className="absolute h-44 w-44 rounded-full bg-gold/0 blur-3xl transition-colors duration-700 group-hover:bg-gold/15" />
         <div ref={art} className="relative h-64 w-full transition-transform duration-700 ease-out">
-          <CardBag3D product={product} offset={index * 1.6} />
+          <CardBagView product={product} offset={index * 1.6} />
         </div>
       </div>
 
@@ -96,8 +97,18 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
 }
 
 export default function Collection() {
+  const ref = useRef<HTMLElement>(null);
+  const [near, setNear] = useState(false);
+  // the shared 3D canvas only exists while the collection is on (or near) screen
+  useEffect(() => {
+    if (!ref.current) return;
+    const io = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { rootMargin: "300px" });
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
   return (
-    <section id="collection" className="relative bg-noir py-28 md:py-40">
+    <section ref={ref} id="collection" className="relative bg-noir py-28 md:py-40">
+      {near && <CardBagsCanvas />}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_0%,rgba(111,66,40,0.25),transparent_70%)]" />
       <div className="relative mx-auto max-w-[1400px] px-5 md:px-10">
         <div className="mb-16 flex flex-col justify-between gap-8 md:mb-24 md:flex-row md:items-end">

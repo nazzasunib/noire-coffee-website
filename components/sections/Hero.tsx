@@ -55,9 +55,9 @@ export default function Hero() {
         scrollTrigger: {
           trigger: root.current,
           start: "top top",
-          end: "+=170%",
+          end: "+=130%",
           pin: true,
-          scrub: 0.6,
+          scrub: 0.4,
           anticipatePin: 1,
           onUpdate: (self) => {
             sceneState.heroProgress = self.progress;

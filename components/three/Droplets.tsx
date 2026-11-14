@@ -76,16 +76,14 @@ const Droplets = forwardRef<DropletsHandle, { pool?: number; timeScale?: number 
       <sphereGeometry args={[1, 16, 12]} />
       {/* real liquid: light passes through (amber core), dark body, sharp wet reflection */}
       <meshPhysicalMaterial
-        color="#c9874a"
-        transmission={0.75}
-        thickness={0.4}
-        ior={1.34}
-        attenuationColor="#3a1606"
-        attenuationDistance={0.06}
-        roughness={0.03}
+        color="#6a2f10"
+        emissive="#7a3a12"
+        emissiveIntensity={0.35}
+        roughness={0.04}
         clearcoat={1}
         clearcoatRoughness={0.02}
-        specularIntensity={1}
+        transparent
+        opacity={0.88}
       />
     </instancedMesh>
   );

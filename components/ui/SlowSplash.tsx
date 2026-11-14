@@ -147,8 +147,6 @@ export default function SlowSplash({ x, y, spread = 30, rate = 26, power = 1 }: 
       }
       const g = 150 * (Math.min(W, H) / 500);
       ctx.clearRect(0, 0, W, H);
-      // draw far (defocused) first, then sharp on top
-      ps.sort((a, b) => b.depth - a.depth);
       for (let i = ps.length - 1; i >= 0; i--) {
         const p = ps[i];
         p.vy += g * t;
@@ -158,7 +156,9 @@ export default function SlowSplash({ x, y, spread = 30, rate = 26, power = 1 }: 
         p.life += dt;
         if (p.life > p.max || p.y > H + 20) ps.splice(i, 1);
       }
-      for (const p of ps) {
+      // far (defocused) drops first, then sharp ones on top — two passes, no per-frame sort
+      for (let pass = 0; pass < 2; pass++) for (const p of ps) {
+        if ((pass === 0) !== (p.depth > 0.5)) continue;
         const fadeIn = Math.min(1, p.life * 5);
         const fadeOut = Math.min(1, (p.max - p.life) * 1.2);
         draw(p, fadeIn * fadeOut);

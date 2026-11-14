@@ -36,7 +36,7 @@ export default function Process() {
         const st = ScrollTrigger.create({
           trigger: pin.current,
           start: "top top",
-          end: "+=280%",
+          end: "+=200%",
           pin: true,
           scrub: true,
           onUpdate: (self) => {

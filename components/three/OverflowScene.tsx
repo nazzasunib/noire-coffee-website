@@ -302,7 +302,7 @@ export default function OverflowScene({ mobile }: { mobile: boolean }) {
     <div ref={wrap} className="absolute inset-0">
       <Canvas
         frameloop={visible ? "always" : "never"}
-        dpr={mobile ? [1, 1.5] : [1, 1.8]}
+        dpr={mobile ? [1, 1.25] : [1, 1.5]}
         camera={{ position: [0, 3.6, 8], fov: 34 }}
         gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
       >

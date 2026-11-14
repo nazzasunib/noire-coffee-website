@@ -151,7 +151,7 @@ function Rig({ mobile }: { mobile: boolean }) {
       <group ref={outer} position={[HOME.x, -2, 0]}>
         <group ref={saucer1}>
           <Saucer />
-          <ContactShadows position={[0, -0.1, 0]} opacity={0.6} scale={6} blur={2.6} far={2} color="#000000" />
+          <ContactShadows frames={1} resolution={256} position={[0, -0.1, 0]} opacity={0.6} scale={6} blur={2.6} far={2} color="#000000" />
         </group>
         <group ref={inner}>
           <group
@@ -179,7 +179,7 @@ function Rig({ mobile }: { mobile: boolean }) {
         <group position={[0, CUP.liquidY + 0.05, 0]}>
           <Steam strengthRef={steam2} />
         </group>
-        <ContactShadows position={[0, -0.1, 0]} opacity={0.6} scale={6} blur={2.6} far={2} color="#000000" />
+        <ContactShadows resolution={256} position={[0, -0.1, 0]} opacity={0.6} scale={6} blur={2.6} far={2} color="#000000" />
       </group>
 
       <PourStream state={pour} />
@@ -220,7 +220,7 @@ export default function HeroScene({ mobile, reduced }: { mobile: boolean; reduce
     <div ref={wrap} className="absolute inset-0">
       <Canvas
         frameloop={visible ? (reduced ? "demand" : "always") : "never"}
-        dpr={mobile ? [1, 1.5] : [1, 1.8]}
+        dpr={mobile ? [1, 1.25] : [1, 1.5]}
         camera={{ position: [0, 1.1, 8.2], fov: 34 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
         shadows={false}
@@ -230,7 +230,7 @@ export default function HeroScene({ mobile, reduced }: { mobile: boolean; reduce
           <spotLight position={[-5, 7, 4]} angle={0.45} penumbra={1} intensity={120} color="#ffd5a1" />
           <pointLight position={[4, 2.5, -3]} intensity={30} color="#c49a62" />
           <pointLight position={[-3, -1, 3]} intensity={6} color="#6f4228" />
-          <Environment resolution={256} frames={1}>
+          <Environment resolution={128} frames={1}>
             <Lightformer form="rect" intensity={3} position={[-4, 5, 2]} scale={[6, 2, 1]} color="#ffe2bd" />
             <Lightformer form="rect" intensity={2} position={[5, 1, -2]} scale={[2, 6, 1]} color="#c49a62" />
             <Lightformer form="ring" intensity={1.2} position={[0, 4, 6]} scale={3} color="#f2e6d5" />

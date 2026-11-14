@@ -83,7 +83,7 @@ export default function ProductViewer({ productId, mobile, distance = 5.6 }: { p
     <div ref={wrap} className="h-full w-full touch-pan-y">
       <Canvas
         frameloop={visible ? "always" : "never"}
-        dpr={mobile ? [1, 1.5] : [1, 2]}
+        dpr={mobile ? [1, 1.25] : [1, 1.5]}
         camera={{ position: [0, 0.3, 5.6], fov: 32 }}
         gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping }}
       >
@@ -92,14 +92,14 @@ export default function ProductViewer({ productId, mobile, distance = 5.6 }: { p
           <spotLight position={[-4, 6, 4]} angle={0.5} penumbra={1} intensity={90} color="#fff1dc" />
           <pointLight position={[3, 1, -3]} intensity={25} color="#c49a62" />
           <PointerLight />
-          <Environment resolution={256} frames={1}>
+          <Environment resolution={128} frames={1}>
             <Lightformer form="rect" intensity={4} position={[-3, 3, 3]} scale={[4, 3, 1]} color="#fff0d8" />
             <Lightformer form="rect" intensity={2.5} position={[4, 0, 1]} scale={[1, 5, 1]} color="#c49a62" />
             <Lightformer form="rect" intensity={1} position={[0, -3, 2]} scale={[6, 1, 1]} color="#6f4228" />
           </Environment>
           <Zoom distance={distance} />
           <SwappingBag productId={productId} />
-          <ContactShadows position={[0, -1.45, 0]} opacity={0.7} scale={6} blur={2.4} far={2.5} />
+          <ContactShadows frames={1} resolution={256} position={[0, -1.45, 0]} opacity={0.7} scale={6} blur={2.4} far={2.5} />
           <OrbitControls
             enablePan={false}
             // wheel-zoom would hijack page scrolling, so zoom is driven by the on-screen buttons

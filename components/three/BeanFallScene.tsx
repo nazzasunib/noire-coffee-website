@@ -184,7 +184,7 @@ export default function BeanFallScene({ active = true }: { active?: boolean }) {
     <div ref={wrap} className="absolute inset-0 bg-[#100c0a]">
       <Canvas
         frameloop={visible && active ? "always" : "never"}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         camera={{ position: [0, 0, 7], fov: 36 }}
         gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}
       >
